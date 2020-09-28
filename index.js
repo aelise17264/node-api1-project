@@ -31,10 +31,32 @@ server.get('/users', (req, res) => {
 let nextId = 4;
 
 server.post('/users', (req, res) => {
-    const data = req.body
-    users.push({id: nextId++, ...data})
+    const data = req.body;
+    const {name, bio} = req.body;
+    users.push({id: nextId++, ...data});
+    if (!name || !bio){
+        res.status(400).json({errorMessage: "Please provide name and bio for the user"});
+    }
+   
     res.status(201).json({data: users})
+    res.status(500).json({errorMessage: "There was an error while saving the user to the database"});
+
 })
+
+server.get('/users/:id', (req, res) => {
+    const id = Number(req.params.id);
+    const user = users.filter( thisUser => thisUser.id === id)
+    if(!user){
+        Object.assign(user)
+        res.status(200).json({data: user})
+
+            
+        }else{
+            res.status(400).json({
+                errorMessage: 'The user with the specified ID does not exist'})
+        }
+
+});
 
 
 const port = 3000
